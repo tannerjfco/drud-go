@@ -2,33 +2,39 @@ package drudapi
 
 import (
 	"log"
-	"os"
 	"testing"
 )
 
 func TestGetApplication200(t *testing.T) {
-	expectedResp := `{
-    "_updated": "Mon, 23 May 2016 20:23:34 GMT",
-    "name": "1fee",
-    "email": "me@there.com",
-    "phone": "123-123-1234",
-    "_links": {
-        "self": {
-            "href": "client/1fee",
-            "title": "Client"
-        },
-        "parent": {
-            "href": "/",
-            "title": "home"
-        },
-        "collection": {
-            "href": "client",
-            "title": "client"
-        }
+	expectedResp := `
+{
+    "_updated": "Mon, 23 May 2016 20:23:37 GMT",
+    "github_hook_id": 123455,
+    "name": "killah",
+    "app_id": "mumbojumbo",
+    "repo_org": "ourorg",
+    "repo": "",
+    "client": {
+        "_updated": "Mon, 23 May 2016 20:23:34 GMT",
+        "name": "somebiz",
+        "email": "",
+        "phone": "",
+        "_created": "Mon, 23 May 2016 20:23:34 GMT",
+        "_id": "574366c6e2638a001f430115",
+        "_etag": "9906d3a8584f0fabbd96451013b38d20fff5f5d3"
     },
-    "_created": "Mon, 23 May 2016 20:23:34 GMT",
-    "_id": "574366c6e2638a001f430115",
-    "_etag": "9906d3a8584f0fabbd96451013b38d20fff5f5d3"
+    "deploys": [
+        {
+            "protocol": "http",
+            "basicauth_pass": "drud",
+            "basicauth_user": "drud",
+            "name": "default",
+            "branch": "master"
+        }
+    ],
+    "_created": "Mon, 23 May 2016 20:23:37 GMT",
+    "_id": "d546fh5ert456",
+    "_etag": "34b4d4c312a2d5cb916fef5330b2a14f53acac4b"
 }`
 	server := getTestServer(200, expectedResp)
 	defer server.Close()
@@ -36,56 +42,24 @@ func TestGetApplication200(t *testing.T) {
 	r := Request{
 		Host: server.URL,
 		Auth: &Credentials{
-			AdminToken: os.Getenv("GITHUB_TOKEN"),
+			AdminToken: "dfgdfg",
 		},
 	}
 
-	c := &Client{
-		Name: "1fee",
+	a := &Application{
+		AppID: "mumbojumbo",
 	}
 
-	err := r.Get(c)
+	err := r.Get(a)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	expect(t, c.Name, "1fee")
-	expect(t, c.Email, "me@there.com")
-	expect(t, c.Phone, "123-123-1234")
-	expect(t, c.Created, "Mon, 23 May 2016 20:23:34 GMT")
-	expect(t, c.ID, "574366c6e2638a001f430115")
-	expect(t, c.Etag, "9906d3a8584f0fabbd96451013b38d20fff5f5d3")
-
-}
-
-func TestPostApplication200(t *testing.T) {
-	expectedResp := `{
-    "_updated": "Mon, 23 May 2016 20:23:34 GMT",
-    "name": "whosit",
-    "email": "what@where.com",
-    "phone": "123-123-1234"
-}`
-	server := getTestServer(200, expectedResp)
-	defer server.Close()
-
-	r := Request{
-		Host: server.URL,
-		Auth: &Credentials{
-			AdminToken: os.Getenv("GITHUB_TOKEN"),
-		},
-	}
-
-	c := &Client{
-		Name:  "whosit",
-		Email: "what@where.com",
-	}
-
-	err := r.Post(c)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	expect(t, c.Name, "whosit")
-	expect(t, c.Email, "what@where.com")
+	expect(t, a.GithubHookID, 123455)
+	expect(t, a.Name, "killah")
+	expect(t, a.RepoOrg, "ourorg")
+	expect(t, a.Created, "Mon, 23 May 2016 20:23:37 GMT")
+	expect(t, a.Etag, "34b4d4c312a2d5cb916fef5330b2a14f53acac4b")
+	expect(t, a.Client.Name, "somebiz")
 
 }

@@ -24,7 +24,6 @@ func getTestServer(code int, body string) *httptest.Server {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// @todo make sure thigns being sent to tests server are correct
-		//fmt.Println(r)
 		w.WriteHeader(code)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintln(w, body)
@@ -32,3 +31,18 @@ func getTestServer(code int, body string) *httptest.Server {
 
 	return server
 }
+
+// func postTestServer(code int) *httptest.Server {
+//
+// 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		// @todo make sure thigns being sent to tests server are correct
+// 		//fmt.Println(r)
+// 		w.WriteHeader(code)
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Header().Set("Authorization", r.Header.Get("Authorization"))
+// 		body, _ := ioutil.ReadAll(r.Body)
+// 		fmt.Fprintln(w, body)
+// 	}))
+//
+// 	return server
+// }

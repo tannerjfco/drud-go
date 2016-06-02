@@ -2,6 +2,17 @@ package drudapi
 
 import "encoding/json"
 
+// Deploy ...
+type Deploy struct {
+	Name          string `json:"name,omitempty"`
+	Controller    string `json:"controller,omitempty"`
+	Branch        string `json:"branch,omitempty"`
+	Hostname      string `json:"hostname,omitempty"`
+	Protocol      string `json:"protocol,omitempty"`
+	BasicAuthUser string `json:"basicauth_user,omitempty"`
+	BasicAuthPass string `json:"basicauth_pass,omitempty"`
+}
+
 // Application ...
 type Application struct {
 	AppID        string   `json:"app_id"`
