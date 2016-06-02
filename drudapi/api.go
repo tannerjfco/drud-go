@@ -13,32 +13,6 @@ type Deploy struct {
 	BasicAuthPass string `json:"basicauth_pass,omitempty"`
 }
 
-// Application ...
-type Application struct {
-	AppID        string   `json:"app_id"`
-	Client       string   `json:"client"`
-	Deploys      []Deploy `json:"deploys"`
-	GithubHookID int      `json:"github_hook_id"`
-	RepoOrg      string   `json:"repo_org"`
-	Name         string   `json:"name"`
-	Repo         string   `json:"repo"`
-	Created      string   `json:"_created,omitempty"`
-	Etag         string   `json:"_etag,omitempty"`
-	ID           string   `json:"_id,omitempty"`
-	Updated      string   `json:"_updated,omitempty"`
-}
-
-// Applications entity
-type Applications struct {
-	Name  string
-	Items []Application `json:"_items"`
-	Meta  struct {
-		MaxResults int `json:"max_results"`
-		Page       int `json:"page"`
-		Total      int `json:"total"`
-	} `json:"_meta"`
-}
-
 // User represents a user entity from the api
 type User struct {
 	Username string      `json:"username"`

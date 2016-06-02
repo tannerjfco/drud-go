@@ -196,7 +196,7 @@ func (r *Request) Patch(entity Entity) error {
 	return nil
 }
 
-// Patch ...
+// Delete ...
 func (r *Request) Delete(entity Entity) error {
 	var req *http.Request
 	var err error

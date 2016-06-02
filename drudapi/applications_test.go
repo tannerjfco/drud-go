@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGetClient200(t *testing.T) {
+func TestGetApplication200(t *testing.T) {
 	expectedResp := `{
     "_updated": "Mon, 23 May 2016 20:23:34 GMT",
     "name": "1fee",
@@ -58,7 +58,7 @@ func TestGetClient200(t *testing.T) {
 
 }
 
-func TestPostClient200(t *testing.T) {
+func TestPostApplication200(t *testing.T) {
 	expectedResp := `{
     "_updated": "Mon, 23 May 2016 20:23:34 GMT",
     "name": "whosit",
