@@ -1,7 +1,9 @@
 package drudapi
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +15,7 @@ import (
 type Entity interface {
 	Path() string                // returns the path that must be added to host to get the entity
 	Unmarshal(data []byte) error // unmarshal json into entity's fields
+	JSON() []byte                //returns the entity's json representation
 }
 
 // -------- Types for representing Drud API Resources --------
@@ -110,6 +113,12 @@ func (c *Client) Unmarshal(data []byte) error {
 	return err
 }
 
+// JSON ...
+func (c Client) JSON() ([]byte, error) {
+	jbytes, err := json.Marshal(c)
+	return jbytes, err
+}
+
 // Clients ...
 type Clients struct {
 	Name  string
@@ -135,7 +144,41 @@ type Request struct {
 	Auth *Credentials
 }
 
-// Get Method for handling GET, POST, PATCH requests to the api
+/*
+Get Method for handling GET, POST, PATCH requests to the api
+
+package main
+
+import (
+	"fmt"
+
+	"github.com/drud/drud-go/drudapi"
+)
+
+func main() {
+	fmt.Println("tes test")
+
+	c := &drudapi.Client{
+		Name: "1fee",
+	}
+
+	r := drudapi.Request{
+		Host: "https://drudapi.genesis.drud.io/v0.1",
+		Auth: &drudapi.Credentials{
+			AdminToken: "fecb013f3c7138cd044568ec9bec074d8a0ab8e4",
+		},
+	}
+
+	err := r.Get(c)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(c)
+	}
+
+}
+
+*/
 func (r *Request) Get(entity Entity) error {
 	var req *http.Request
 	var err error
@@ -146,6 +189,56 @@ func (r *Request) Get(entity Entity) error {
 	req, err = http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return fmt.Errorf("Error making GET request: %s", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	if r.Auth != nil {
+		// check for admin token, then auth token, then user Credentials
+		if r.Auth.AdminToken != "" {
+			req.Header.Set("Authorization", "token "+r.Auth.AdminToken)
+		} else if r.Auth.Token != "" {
+			req.Header.Set("Authorization", "Bearer "+r.Auth.Token)
+		} else {
+			req.SetBasicAuth(r.Auth.Username, r.Auth.Password)
+		}
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	// Handle different status codes
+	if resp.StatusCode-200 > 100 {
+		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	err = entity.Unmarshal(body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Request) Post(entity Entity) error {
+	var req *http.Request
+	var err error
+
+	u, err := url.Parse(r.Host)
+	u.Path = path.Join(u.Path, entity.Path())
+
+	req, err = http.NewRequest("POST", u.String(), bytes.NewBuffer(entity.JSON()))
+	if err != nil {
+		return errors.New("Error creating NewRequest: " + err.Error())
 	}
 
 	req.Header.Set("Content-Type", "application/json")
