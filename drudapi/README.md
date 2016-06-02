@@ -59,3 +59,15 @@ func main() {
 }
 
 ```
+
+expected output
+
+```shell
+POsting
+&{Created:Thu, 02 Jun 2016 19:32:32 GMT Etag:8f054b6026600896d29f74dc1d1d138f8ed50867 ID:575089d0e2638a0017796b77 Updated:Thu, 02 Jun 2016 19:32:32 GMT Email: Name:turtle Phone:}
+Patching
+&{Created:Thu, 02 Jun 2016 19:32:32 GMT Etag:adbd8203e5ceaedeaeac5fff8f77be491e9c6b40 ID:575089d0e2638a0017796b77 Updated:Thu, 02 Jun 2016 19:32:32 GMT Email:my@email.com Name:turtle Phone:123-123-1235}
+Deleting
+Getting
+404 Not Found: 404
+```
