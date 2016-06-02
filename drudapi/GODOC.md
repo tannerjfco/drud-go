@@ -92,11 +92,10 @@ func (c *Client) Unmarshal(data []byte) error
 ```
 Unmarshal ...
 
-#### type Clients
+#### type ClientList
 
 ```go
-type Clients struct {
-	Name  string
+type ClientList struct {
 	Items []Client `json:"_items"`
 	Meta  struct {
 		MaxResults int `json:"max_results"`
@@ -106,7 +105,42 @@ type Clients struct {
 }
 ```
 
-Clients ...
+ClientList ...
+
+#### func (ClientList) ETAG
+
+```go
+func (c ClientList) ETAG() string
+```
+ETAG ...
+
+#### func (ClientList) JSON
+
+```go
+func (c ClientList) JSON() []byte
+```
+JSON ...
+
+#### func (ClientList) PatchJSON
+
+```go
+func (c ClientList) PatchJSON() []byte
+```
+PatchJSON ...
+
+#### func (ClientList) Path
+
+```go
+func (c ClientList) Path(method string) string
+```
+Path ...
+
+#### func (*ClientList) Unmarshal
+
+```go
+func (c *ClientList) Unmarshal(data []byte) error
+```
+Unmarshal ...
 
 #### type Credentials
 
@@ -176,8 +210,9 @@ Region ...
 
 ```go
 type Request struct {
-	Host string
-	Auth *Credentials
+	Host  string // base path of the api  e.g. https://drudapi.genesis.drud.io/v0.1
+	Query string // optional query params e.g. `where={"name":"fred"}``
+	Auth  *Credentials
 }
 ```
 

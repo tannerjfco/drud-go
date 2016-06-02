@@ -71,3 +71,40 @@ Deleting
 Getting
 404 Not Found: 404
 ```
+
+Working with lists and filters
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/drud/drud-go/drudapi"
+)
+
+func main() {
+
+	r := drudapi.Request{
+		Host: "https://drudapi.genesis.drud.io/v0.1",
+		Auth: &drudapi.Credentials{
+			AdminToken: "gittoken",
+		},
+	}
+
+	cl := &drudapi.ClientList{}
+	r.Query = `where={"name":"1fee"}`
+
+	err := r.Get(cl)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		for _, v := range cl.Items {
+			fmt.Printf("%+v\n", v)
+		}
+
+	}
+
+}
+
+```

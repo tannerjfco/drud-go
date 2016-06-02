@@ -29,8 +29,9 @@ type Credentials struct {
 
 // Request type used for building requests
 type Request struct {
-	Host string
-	Auth *Credentials
+	Host  string // base path of the api  e.g. https://drudapi.genesis.drud.io/v0.1
+	Query string // optional query params e.g. `where={"name":"fred"}``
+	Auth  *Credentials
 }
 
 // Get ...
@@ -40,6 +41,7 @@ func (r *Request) Get(entity Entity) error {
 
 	u, err := url.Parse(r.Host)
 	u.Path = path.Join(u.Path, entity.Path("GET"))
+	u.RawQuery = r.Query
 
 	req, err = http.NewRequest("GET", u.String(), nil)
 	if err != nil {
