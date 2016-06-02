@@ -10,7 +10,7 @@
 ```go
 type Application struct {
 	AppID        string   `json:"app_id"`
-	Client       string   `json:"client"`
+	Client       Client   `json:"client"`
 	Deploys      []Deploy `json:"deploys"`
 	GithubHookID int      `json:"github_hook_id"`
 	RepoOrg      string   `json:"repo_org"`
@@ -25,10 +25,45 @@ type Application struct {
 
 Application ...
 
-#### type Applications
+#### func (Application) ETAG
 
 ```go
-type Applications struct {
+func (a Application) ETAG() string
+```
+ETAG ...
+
+#### func (Application) JSON
+
+```go
+func (a Application) JSON() []byte
+```
+JSON ...
+
+#### func (Application) PatchJSON
+
+```go
+func (a Application) PatchJSON() []byte
+```
+PatchJSON ...
+
+#### func (Application) Path
+
+```go
+func (a Application) Path(method string) string
+```
+Path ...
+
+#### func (*Application) Unmarshal
+
+```go
+func (a *Application) Unmarshal(data []byte) error
+```
+Unmarshal ...
+
+#### type ApplicationList
+
+```go
+type ApplicationList struct {
 	Name  string
 	Items []Application `json:"_items"`
 	Meta  struct {
@@ -39,7 +74,21 @@ type Applications struct {
 }
 ```
 
-Applications entity
+ApplicationList entity
+
+#### func (ApplicationList) Path
+
+```go
+func (a ApplicationList) Path(method string) string
+```
+Path ...
+
+#### func (*ApplicationList) Unmarshal
+
+```go
+func (a *ApplicationList) Unmarshal(data []byte) error
+```
+Unmarshal ...
 
 #### type Client
 
@@ -107,27 +156,6 @@ type ClientList struct {
 
 ClientList ...
 
-#### func (ClientList) ETAG
-
-```go
-func (c ClientList) ETAG() string
-```
-ETAG ...
-
-#### func (ClientList) JSON
-
-```go
-func (c ClientList) JSON() []byte
-```
-JSON ...
-
-#### func (ClientList) PatchJSON
-
-```go
-func (c ClientList) PatchJSON() []byte
-```
-PatchJSON ...
-
 #### func (ClientList) Path
 
 ```go
@@ -185,6 +213,18 @@ type Entity interface {
 
 Entity interface represents eve entities in some functinos
 
+#### type EntityGetter
+
+```go
+type EntityGetter interface {
+	Path(method string) string   // returns the path that must be added to host to get the entity
+	Unmarshal(data []byte) error // unmarshal json into entity's fields
+}
+```
+
+EntityGetter lets you pass entity/entity list to Get without having to implement
+all the same methods for both
+
 #### type Provider
 
 ```go
@@ -223,12 +263,12 @@ Request type used for building requests
 ```go
 func (r *Request) Delete(entity Entity) error
 ```
-Patch ...
+Delete ...
 
 #### func (*Request) Get
 
 ```go
-func (r *Request) Get(entity Entity) error
+func (r *Request) Get(entity EntityGetter) error
 ```
 Get ...
 
