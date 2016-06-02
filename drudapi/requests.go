@@ -19,6 +19,13 @@ type Entity interface {
 	ETAG() string                // returns etag
 }
 
+// EntityGetter lets you pass entity/entity list to Get without having to
+// implement all the same methods for both
+type EntityGetter interface {
+	Path(method string) string   // returns the path that must be added to host to get the entity
+	Unmarshal(data []byte) error // unmarshal json into entity's fields
+}
+
 // Credentials gets passed around to functions for authenticating with the api
 type Credentials struct {
 	Username   string `json:"username"`
@@ -35,7 +42,7 @@ type Request struct {
 }
 
 // Get ...
-func (r *Request) Get(entity Entity) error {
+func (r *Request) Get(entity EntityGetter) error {
 	var req *http.Request
 	var err error
 

@@ -80,19 +80,3 @@ func (c *ClientList) Unmarshal(data []byte) error {
 	err := json.Unmarshal(data, &c)
 	return err
 }
-
-// JSON ...
-func (c ClientList) JSON() []byte {
-	jbytes, _ := json.Marshal(c)
-	return jbytes
-}
-
-// PatchJSON ...
-func (c ClientList) PatchJSON() []byte {
-	return []byte("")
-}
-
-// ETAG ...
-func (c ClientList) ETAG() string {
-	return ""
-}
