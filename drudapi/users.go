@@ -1,6 +1,11 @@
 package drudapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"text/tabwriter"
+)
 
 // User represents a user entity from the api
 type User struct {
@@ -21,7 +26,7 @@ func (u User) Path(method string) string {
 	if method == "POST" {
 		path = "users"
 	} else {
-		path = "users/" + u.ID
+		path = "users/" + u.Username
 	}
 	return path
 }
@@ -78,4 +83,16 @@ func (u UserList) Path(method string) string {
 func (u *UserList) Unmarshal(data []byte) error {
 	err := json.Unmarshal(data, &u)
 	return err
+}
+
+// Describe pretty prints the client list
+func (u *UserList) Describe() {
+	fmt.Printf("%v %v found.\n", len(u.Items), FormatPlural(len(u.Items), "user", "users"))
+	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
+	defer tabWriter.Flush()
+
+	fmt.Fprintln(tabWriter, "\nUSERNAME\tCREATED\tUPDATED")
+	for _, user := range u.Items {
+		fmt.Fprintf(tabWriter, "%v\t%v\t%v\n", user.Username, user.Created, user.Updated)
+	}
 }

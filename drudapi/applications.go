@@ -1,6 +1,12 @@
 package drudapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+	"text/tabwriter"
+)
 
 // Deploy ...
 type Deploy struct {
@@ -11,6 +17,7 @@ type Deploy struct {
 	Protocol      string `json:"protocol,omitempty"`
 	BasicAuthUser string `json:"basicauth_user,omitempty"`
 	BasicAuthPass string `json:"basicauth_pass,omitempty"`
+	AutoManaged   bool   `json:"auto_managed,omitempty"`
 }
 
 // Application ...
@@ -75,6 +82,34 @@ func (a Application) ETAG() string {
 	return a.Etag
 }
 
+// Describe an application..mostly used for displaying deploys
+func (a *Application) Describe() {
+	fmt.Println("App:", a.Name, "Client:", a.Client.Name)
+	fmt.Printf("\n%v %v found.\n", len(a.Deploys), FormatPlural(len(a.Deploys), "deploy", "deploys"))
+	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
+	defer tabWriter.Flush()
+
+	fmt.Fprintln(tabWriter, "\nNAME\tCONTROLLER\tBRANCH\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tPROTOCOL\tAUTO MANAGED")
+	for _, dep := range a.Deploys {
+		var managed string
+
+		if dep.AutoManaged == true {
+			managed = "     ✓"
+		}
+
+		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
+			dep.Name,
+			dep.Controller,
+			dep.Branch,
+			dep.Hostname,
+			dep.BasicAuthUser,
+			dep.BasicAuthPass,
+			dep.Protocol,
+			managed,
+		)
+	}
+}
+
 // ApplicationList entity
 type ApplicationList struct {
 	Name  string
@@ -95,4 +130,28 @@ func (a ApplicationList) Path(method string) string {
 func (a *ApplicationList) Unmarshal(data []byte) error {
 	err := json.Unmarshal(data, &a)
 	return err
+}
+
+// Describe pretty prints the entity
+func (a *ApplicationList) Describe() {
+	fmt.Printf("%v %v found.\n", len(a.Items), FormatPlural(len(a.Items), "application", "applications"))
+	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
+	defer tabWriter.Flush()
+
+	fmt.Fprintln(tabWriter, "\nNAME\tCLIENT\tAPP(s)\tCREATED\tUPDATED")
+	for _, app := range a.Items {
+		// gather list of deploys by name
+		var appNames []string
+		for _, dep := range app.Deploys {
+			appNames = append(appNames, dep.Name)
+		}
+
+		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\n",
+			app.Name,
+			app.Client.Name,
+			strings.Join(appNames, ","),
+			app.Created,
+			app.Updated,
+		)
+	}
 }
