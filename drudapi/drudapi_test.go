@@ -32,17 +32,20 @@ func getTestServer(code int, body string) *httptest.Server {
 	return server
 }
 
-// func postTestServer(code int) *httptest.Server {
-//
-// 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		// @todo make sure thigns being sent to tests server are correct
-// 		//fmt.Println(r)
-// 		w.WriteHeader(code)
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Header().Set("Authorization", r.Header.Get("Authorization"))
-// 		body, _ := ioutil.ReadAll(r.Body)
-// 		fmt.Fprintln(w, body)
-// 	}))
-//
-// 	return server
-// }
+func postTestServer(t *testing.T, body string, reqData map[string]string) *httptest.Server {
+	code := 200
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// @todo make sure thigns being sent to tests server are correct
+		expect(t, r.Header.Get("Content-Type"), reqData["content-type"])
+		expect(t, r.Header.Get("Authorization"), reqData["authorization"])
+		expect(t, r.RequestURI, reqData["endpoint"])
+		expect(t, r.ContentLength, int64(len(reqData["payload"])))
+
+		w.WriteHeader(code)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, body)
+	}))
+
+	return server
+}
