@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -74,15 +75,16 @@ func (r *Request) Get(entity EntityGetter) error {
 		return err
 	}
 
-	// Handle different status codes
-	if resp.StatusCode-200 > 100 {
-		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
-	}
-
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	// Handle different status codes
+	if resp.StatusCode-200 > 100 {
+		log.Println(string(body))
+		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
 	}
 
 	err = entity.Unmarshal(body)
@@ -125,15 +127,16 @@ func (r *Request) Post(entity Entity) error {
 		return err
 	}
 
-	// Handle different status codes
-	if resp.StatusCode-200 > 100 {
-		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
-	}
-
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	// Handle different status codes
+	if resp.StatusCode-200 > 100 {
+		log.Println(string(body))
+		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
 	}
 
 	err = entity.Unmarshal(body)
@@ -177,15 +180,16 @@ func (r *Request) Patch(entity Entity) error {
 		return err
 	}
 
-	// Handle different status codes
-	if resp.StatusCode-200 > 100 {
-		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
-	}
-
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	// Handle different status codes
+	if resp.StatusCode-200 > 100 {
+		log.Println(string(body))
+		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
 	}
 
 	err = entity.Unmarshal(body)

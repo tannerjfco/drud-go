@@ -1,6 +1,11 @@
 package drudapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"text/tabwriter"
+)
 
 // Client ...
 type Client struct {
@@ -79,4 +84,21 @@ func (c ClientList) Path(method string) string {
 func (c *ClientList) Unmarshal(data []byte) error {
 	err := json.Unmarshal(data, &c)
 	return err
+}
+
+// Describe pretty prints the client list
+func (c *ClientList) Describe() {
+	fmt.Printf("%v %v found.\n", len(c.Items), FormatPlural(len(c.Items), "client", "clients"))
+	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
+	defer tabWriter.Flush()
+	if len(c.Items) > 0 {
+		fmt.Fprintln(tabWriter, "\nNAME\tEMAIL\tPHONE")
+		for _, v := range c.Items {
+			fmt.Fprintf(tabWriter, "%v\t%v\t%v\n",
+				v.Name,
+				v.Email,
+				v.Phone,
+			)
+		}
+	}
 }

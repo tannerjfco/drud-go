@@ -63,3 +63,91 @@ func TestGetApplication200(t *testing.T) {
 	expect(t, a.Client.Name, "somebiz")
 
 }
+
+// TestPostClient tests that when posting a client the server receives data that is formed
+// correctly and that given a proper response the client will know its id and etag
+func TestPostApplication(t *testing.T) {
+	expectedResp := `{
+    "_updated": "Mon, 13 Jun 2016 19:43:57 GMT",
+    "github_hook_id": 0,
+    "name": "KubeJobWatcher",
+    "app_id": "drud-kubejobwatcher",
+    "repo_org": "",
+    "repo": "",
+    "client": {
+        "_updated": "Tue, 07 Jun 2016 21:49:56 GMT",
+        "name": "drud",
+        "email": "",
+        "phone": "",
+        "_created": "Tue, 07 Jun 2016 21:49:56 GMT",
+        "_id": "575741845aeade0018a29423",
+        "_etag": "9fb9dd879b86757f0f6d0e65e3714b07abfa7b0d"
+    },
+    "_links": {
+        "self": {
+            "href": "application/drud-kubejobwatcher",
+            "title": "Application"
+        }
+    },
+    "deploys": [
+        {
+            "protocol": "http",
+            "name": "default",
+            "branch": "master",
+            "auto_managed": false
+        }
+    ],
+    "_created": "Mon, 13 Jun 2016 19:43:57 GMT",
+    "_status": "OK",
+    "_id": "98734598723094857023985",
+    "_etag": "qwertyuiop12345"
+}`
+
+	reqData := map[string]string{
+		"content-type":  "application/json",
+		"authorization": "token dfgdfg",
+		"endpoint":      "/application",
+	}
+
+	c := &Client{
+		Name:  "testyclient",
+		Email: "client@testy.com",
+		Phone: "3192832323",
+	}
+
+	deploy := Deploy{
+		Name:     "default",
+		Protocol: "http",
+	}
+
+	app := &Application{
+		Name:    "KubeJobWatcher",
+		Client:  *c,
+		Repo:    "",
+		RepoOrg: "",
+		Deploys: []Deploy{deploy},
+	}
+
+	reqData["payload"] = string(app.JSON())
+
+	server := postTestServer(t, expectedResp, reqData)
+	defer server.Close()
+
+	r := Request{
+		Host: server.URL,
+		Auth: &Credentials{
+			AdminToken: "dfgdfg",
+		},
+	}
+
+	err := r.Post(app)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	expect(t, app.AppID, "drud-kubejobwatcher")
+	expect(t, app.Etag, "qwertyuiop12345")
+	expect(t, app.ID, "98734598723094857023985")
+	expect(t, app.Client.ID, "575741845aeade0018a29423")
+
+}
