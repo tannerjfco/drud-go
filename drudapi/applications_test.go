@@ -145,7 +145,9 @@ func TestPostApplication(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	expect(t, app.AppID, "drud-kubejobwatcher")
 	expect(t, app.Etag, "qwertyuiop12345")
 	expect(t, app.ID, "98734598723094857023985")
+	expect(t, app.Client.ID, "575741845aeade0018a29423")
 
 }
