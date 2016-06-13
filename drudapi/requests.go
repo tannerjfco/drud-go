@@ -154,8 +154,6 @@ func (r *Request) Patch(entity Entity) error {
 
 	u, err := url.Parse(r.Host)
 	u.Path = path.Join(u.Path, entity.Path("PATCH"))
-	fmt.Println(u.String())
-	fmt.Println(string(entity.JSON()))
 
 	req, err = http.NewRequest("PATCH", u.String(), bytes.NewBuffer(entity.PatchJSON()))
 	if err != nil {
