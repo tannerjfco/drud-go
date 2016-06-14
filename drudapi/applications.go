@@ -24,11 +24,11 @@ type Deploy struct {
 type Application struct {
 	AppID        string   `json:"app_id"`
 	Client       Client   `json:"client"`
-	Deploys      []Deploy `json:"deploys"`
-	GithubHookID int      `json:"github_hook_id"`
-	RepoOrg      string   `json:"repo_org"`
+	Deploys      []Deploy `json:"deploys,omitempty"`
+	GithubHookID int      `json:"github_hook_id,omitempty"`
+	RepoOrg      string   `json:"repo_org,omitempty"`
 	Name         string   `json:"name"`
-	Repo         string   `json:"repo"`
+	Repo         string   `json:"repo,omitempty"`
 	Created      string   `json:"_created,omitempty"`
 	Etag         string   `json:"_etag,omitempty"`
 	ID           string   `json:"_id,omitempty"`
