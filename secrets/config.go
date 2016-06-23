@@ -13,7 +13,7 @@ import (
 // SetVaultVars sets globals for vault access
 func ConfigVault(tokenFile string, vaultHost string) {
 	// ensure there is a token for use with vault unless this is the auth command
-
+	configEditor()
 	var err error
 	if _, err = os.Stat(tokenFile); os.IsNotExist(err) {
 		log.Fatal("No sanctuary token found. Run `drud secret auth`")
@@ -57,4 +57,16 @@ func getSanctuaryToken(tokenFile string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(string(fileBytes)), nil
+}
+
+func configEditor() {
+	// allow user to have different editor for secrets
+	// fall back to default editor
+	editor = os.Getenv("SECRET_EDITOR")
+	if editor == "" {
+		editor = os.Getenv("EDITOR")
+		if editor == "" {
+			editor = "atom -w"
+		}
+	}
 }
