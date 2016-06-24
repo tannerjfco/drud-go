@@ -18,6 +18,7 @@ type Deploy struct {
 	BasicAuthUser string `json:"basicauth_user,omitempty"`
 	BasicAuthPass string `json:"basicauth_pass,omitempty"`
 	AutoManaged   bool   `json:"auto_managed,omitempty"`
+	MigrateFrom   string `json:"migrate_from,omitempty"`
 }
 
 // Application ...
