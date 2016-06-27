@@ -11,7 +11,7 @@ import (
 // Deploy ...
 type Deploy struct {
 	Name          string `json:"name,omitempty"`
-	Controller    string `json:"controller,omitempty"`
+	Template      string `json:"template,omitempty"`
 	Branch        string `json:"branch,omitempty"`
 	Hostname      string `json:"hostname,omitempty"`
 	Protocol      string `json:"protocol,omitempty"`
@@ -90,7 +90,7 @@ func (a *Application) Describe() {
 	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
 	defer tabWriter.Flush()
 
-	fmt.Fprintln(tabWriter, "\nNAME\tCONTROLLER\tBRANCH\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tPROTOCOL\tAUTO MANAGED")
+	fmt.Fprintln(tabWriter, "\nNAME\tTEMPLATE\tBRANCH\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tPROTOCOL\tAUTO MANAGED")
 	for _, dep := range a.Deploys {
 		var managed string
 
@@ -100,7 +100,7 @@ func (a *Application) Describe() {
 
 		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
 			dep.Name,
-			dep.Controller,
+			dep.Template,
 			dep.Branch,
 			dep.Hostname,
 			dep.BasicAuthUser,
