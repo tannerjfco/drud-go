@@ -16,6 +16,7 @@ type Client struct {
 	Email   string `json:"email"`
 	Name    string `json:"name,omitempty"`
 	Phone   string `json:"phone"`
+	RepoOrg string `json:"repo_org,omitempty"`
 }
 
 // Path ...
