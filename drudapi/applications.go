@@ -95,7 +95,7 @@ func (a Application) ETAG() string {
 func (a *Application) RepoURL(token string) string {
 	var url string
 	if a.RepoDetails != nil {
-		if token == "" {
+		if token != "" {
 			url = fmt.Sprintf("https://%s@%s/%s/%s.git",
 				token,
 				a.RepoDetails.Host,
