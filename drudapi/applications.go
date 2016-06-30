@@ -61,6 +61,16 @@ func (a *Application) Unmarshal(data []byte) error {
 	return err
 }
 
+// GetDeploy looks for a deploy by name and returns it
+func (a *Application) GetDeploy(name string) *Deploy {
+	for _, d := range a.Deploys {
+		if d.Name == name {
+			return &d
+		}
+	}
+	return nil
+}
+
 // JSON ...
 func (a Application) JSON() []byte {
 	a.ID = ""
