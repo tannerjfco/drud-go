@@ -30,10 +30,17 @@ type Application struct {
 	RepoOrg      string   `json:"repo_org,omitempty"`
 	Name         string   `json:"name"`
 	Repo         string   `json:"repo,omitempty"`
-	Created      string   `json:"_created,omitempty"`
-	Etag         string   `json:"_etag,omitempty"`
-	ID           string   `json:"_id,omitempty"`
-	Updated      string   `json:"_updated,omitempty"`
+	RepoDetails  *struct {
+		Host   string `json:"host,omitempty"`
+		Name   string `json:"name,omitempty"`
+		Org    string `json:"org,omitempty"`
+		Branch string `json:"branch,omitempty"`
+		Dest   string `json:"dest,omitempty"`
+	} `json:"repo_details,omitempty"`
+	Created string `json:"_created,omitempty"`
+	Etag    string `json:"_etag,omitempty"`
+	ID      string `json:"_id,omitempty"`
+	Updated string `json:"_updated,omitempty"`
 }
 
 // Path ...
@@ -60,6 +67,7 @@ func (a Application) JSON() []byte {
 	a.Etag = ""
 	a.Created = ""
 	a.Updated = ""
+	a.RepoDetails = nil
 
 	jbytes, _ := json.Marshal(a)
 	return jbytes
@@ -81,6 +89,25 @@ func (a Application) PatchJSON() []byte {
 // ETAG ...
 func (a Application) ETAG() string {
 	return a.Etag
+}
+
+// RepoURL ...
+func (a *Application) RepoURL(token string) string {
+	var url string
+	if a.RepoDetails != nil {
+		if token != "" {
+			url = fmt.Sprintf("https://%s@%s/%s/%s.git",
+				token,
+				a.RepoDetails.Host,
+				a.RepoDetails.Org,
+				a.Name,
+			)
+		} else {
+			url = fmt.Sprintf("https://%s/%s/%s.git", a.RepoDetails.Host, a.RepoDetails.Org, a.Name)
+		}
+	}
+
+	return url
 }
 
 // Describe an application..mostly used for displaying deploys

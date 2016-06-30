@@ -135,6 +135,7 @@ func (r *Request) Post(entity Entity) error {
 
 	// Handle different status codes
 	if resp.StatusCode-200 > 100 {
+		log.Println(u.String())
 		log.Println(string(body))
 		return fmt.Errorf("%s: %d", resp.Status, resp.StatusCode)
 	}
