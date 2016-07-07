@@ -4,9 +4,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	pathlib "path"
 	"strings"
 	"text/tabwriter"
 )
+
+// BackUpLink is used to interacting with the gcs endpoint and retrieving signed urls to backups
+type BackUpLink struct {
+	AppID    string
+	DeployID string // really the deplay.Name
+	URL      string // will be set on GET from drudclient
+	Type     string // currently just 'mysql' or 'files'
+}
+
+// Path returns DRUD API path for a signed backup url
+func (l BackUpLink) Path(method string) string {
+	return pathlib.Join("gcs", l.Type, l.AppID, l.DeployID)
+}
+
+// Unmarshal sets the URL that should be in data in the URL field
+func (l *BackUpLink) Unmarshal(data []byte) error {
+	var err error
+	if len(data) == 0 {
+		err = fmt.Errorf("No link to unmarshal!")
+	}
+
+	l.URL = string(data)
+	return err
+}
 
 // Deploy ...
 type Deploy struct {
@@ -99,6 +124,24 @@ func (a Application) PatchJSON() []byte {
 // ETAG ...
 func (a Application) ETAG() string {
 	return a.Etag
+}
+
+// GetFilesLink ...
+func (a *Application) GetFilesLink(deployName string) (string, error) {
+	deploy := a.GetDeploy(deployName)
+	if deploy == nil {
+		return "", fmt.Errorf("No deploy found by name %s", deployName)
+	}
+	return a.AppID + "/" + deploy.Name, nil
+}
+
+// GetMysqlLink ...
+func (a *Application) GetMysqlLink(deployName string) (string, error) {
+	deploy := a.GetDeploy(deployName)
+	if deploy == nil {
+		return "", fmt.Errorf("No deploy found by name %s", deployName)
+	}
+	return a.AppID + "/" + deploy.Name, nil
 }
 
 // RepoURL ...
