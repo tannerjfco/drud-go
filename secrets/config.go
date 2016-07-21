@@ -34,21 +34,22 @@ func ConfigVault(tokenFile string, vaultHost string) {
 	}
 
 	vClient.SetToken(cTok)
+
 	vault = *vClient.Logical()
 }
 
 // GetTokenDetails returns a map of the user's token info
-func GetTokenDetails() map[string]interface{} {
+func GetTokenDetails() (map[string]interface{}, error) {
 	sobj := Secret{
 		Path: "/auth/token/lookup-self",
 	}
 
 	err := sobj.Read()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return sobj.Data
+	return sobj.Data, nil
 }
 
 func getSanctuaryToken(tokenFile string) (string, error) {
