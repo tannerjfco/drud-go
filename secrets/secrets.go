@@ -13,6 +13,8 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/hashicorp/vault/api"
+	vaultAPI "github.com/hashicorp/vault/api"
+	vaultGithub "github.com/hashicorp/vault/builtin/credential/github"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -340,4 +342,75 @@ func (s *Secret) MustValidate() error {
 			s.PromptEdit("Secret does not validate.")
 		}
 	}
+}
+
+// GetJWT returns the jwt
+func GetJWT(token string, vaultHost string, projectID string) ([]byte, error) {
+	err := authVault(token, vaultHost)
+
+	if err != nil {
+		return []byte(""), err
+	}
+	// Get the JWT out vault and use the gcloud client to activate a service account
+	project := strings.Split(projectID, "-")[0]
+	sobj := Secret{
+		Path: fmt.Sprintf("secret/gce/%s-jwt", project),
+	}
+	err = sobj.Read()
+	if err != nil {
+		return []byte(""), err
+	}
+
+	jwt, err := json.Marshal(sobj.Data)
+
+	if err != nil {
+		log.Println("Could not decode JWT file")
+		return []byte(""), err
+	}
+
+	return jwt, nil
+}
+
+// authVault uses providedf git token and vault address to create an authenticated vautl client
+func authVault(token string, vaultHost string) error {
+
+	// Write our token to a tempfile and configure vault to use it.
+	if token == "" || vaultHost == "" {
+		return errors.New("Vault token or address not found")
+	}
+
+	vaultCFG := *vaultAPI.DefaultConfig()
+	vaultCFG.Address = vaultHost
+	vClient, err := vaultAPI.NewClient(&vaultCFG)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	mountInput := map[string]string{
+		"mount": "github",
+		"token": token,
+	}
+
+	// create vault client instance
+	cliHandler := vaultGithub.CLIHandler{}
+	var cTok string
+
+	cTok, err = cliHandler.Auth(vClient, mountInput)
+	if err != nil {
+		log.Fatalln("Error while authenticating with DRUD.", err)
+	}
+
+	tmpfile, err := ioutil.TempFile("", "vault")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err = tmpfile.Write([]byte(cTok)); err != nil {
+		log.Fatal(err)
+	}
+	if err = tmpfile.Close(); err != nil {
+		log.Fatal(err)
+	}
+	tmpFileLoc := tmpfile.Name()
+	ConfigVault(tmpFileLoc, vaultHost)
+	return nil
 }
