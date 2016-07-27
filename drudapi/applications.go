@@ -55,6 +55,7 @@ type Application struct {
 	RepoOrg      string   `json:"repo_org,omitempty"`
 	Name         string   `json:"name"`
 	Repo         string   `json:"repo,omitempty"`
+	SlackChannel string   `json:"slack_channel,omitempty"`
 	RepoDetails  *struct {
 		Host   string `json:"host,omitempty"`
 		Name   string `json:"name,omitempty"`
@@ -170,7 +171,7 @@ func (a *Application) Describe() {
 	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
 	defer tabWriter.Flush()
 
-	fmt.Fprintln(tabWriter, "\nNAME\tTEMPLATE\tBRANCH\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tPROTOCOL\tAUTO MANAGED")
+	fmt.Fprintln(tabWriter, "\nNAME\tTEMPLATE\tBRANCH\tPROTOCOL\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tAUTO MANAGED")
 	for _, dep := range a.Deploys {
 		var managed string
 
@@ -182,10 +183,10 @@ func (a *Application) Describe() {
 			dep.Name,
 			dep.Template,
 			dep.Branch,
+			dep.Protocol,
 			dep.Hostname,
 			dep.BasicAuthUser,
 			dep.BasicAuthPass,
-			dep.Protocol,
 			managed,
 		)
 	}
@@ -219,7 +220,7 @@ func (a *ApplicationList) Describe() {
 	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
 	defer tabWriter.Flush()
 
-	fmt.Fprintln(tabWriter, "\nNAME\tCLIENT\tAPP(s)\tCREATED\tUPDATED")
+	fmt.Fprintln(tabWriter, "\nNAME\tCLIENT\tAPP(s)\tSLACK CHANNEL\tCREATED\tUPDATED")
 	for _, app := range a.Items {
 		// gather list of deploys by name
 		var appNames []string
@@ -227,10 +228,11 @@ func (a *ApplicationList) Describe() {
 			appNames = append(appNames, dep.Name)
 		}
 
-		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\n",
+		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\t%v\n",
 			app.Name,
 			app.Client.Name,
 			strings.Join(appNames, ","),
+			app.SlackChannel,
 			app.Created,
 			app.Updated,
 		)
