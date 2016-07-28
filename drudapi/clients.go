@@ -13,9 +13,9 @@ type Client struct {
 	Etag    string `json:"_etag,omitempty"`
 	ID      string `json:"_id,omitempty"`
 	Updated string `json:"_updated,omitempty"`
-	Email   string `json:"email"`
+	Email   string `json:"email,omitempty"`
 	Name    string `json:"name,omitempty"`
-	Phone   string `json:"phone"`
+	Phone   string `json:"phone,omitempty"`
 	RepoOrg string `json:"repo_org,omitempty"`
 }
 

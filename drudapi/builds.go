@@ -4,18 +4,25 @@ import "encoding/json"
 
 // Build ...
 type Build struct {
-	Created  string `json:"_created,omitempty"`
-	Etag     string `json:"_etag,omitempty"`
-	ID       string `json:"_id,omitempty"`
-	Updated  string `json:"_updated,omitempty"`
-	Name     string `json:"name,omitempty"`
-	RepoName string `json:"repo_name"`
-	Registry string `json:"registry"`
-	Branch   string `json:"branch"`
-	State    string `json:"state"`
-	Logs     string `json:"logs"`
-	Build    int    `json:"build"`
-	Client   Client `json:"client"`
+	Created     string      `json:"_created,omitempty"`
+	Etag        string      `json:"_etag,omitempty"`
+	ID          string      `json:"_id,omitempty"`
+	Updated     string      `json:"_updated,omitempty"`
+	Type        string      `json:"type,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	CloneURL    string      `json:"clone_url,omitempty"`
+	Registry    string      `json:"registry,omitempty"`
+	ImageName   string      `json:"image_name,omitempty"`
+	Branch      string      `json:"branch,omitempty"`
+	DeployName  string      `json:"deploy_name,omitempty"`
+	State       string      `json:"state,omitempty"`
+	Logs        string      `json:"logs,omitempty"`
+	Build       int         `json:"build,omitempty"`
+	Client      Client      `json:"client,omitempty"`
+	Template    string      `json:"template,omitempty"`
+	Application Application `json:"application,omitempty"`
+	Container   Container   `json:"container,omitempty"`
+	TagName     string      `json:"tag_name,omitempty"`
 }
 
 // Path ...

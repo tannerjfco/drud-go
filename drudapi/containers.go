@@ -9,10 +9,10 @@ type Container struct {
 	ID           string `json:"_id,omitempty"`
 	Updated      string `json:"_updated,omitempty"`
 	Name         string `json:"name,omitempty"`
-	Registry     string `json:"registry"`
-	Branch       string `json:"branch"`
-	GithubHookID int    `json:"github_hook_id"`
-	Client       Client `json:"client"`
+	Registry     string `json:"registry,omitempty"`
+	Branch       string `json:"branch,omitempty"`
+	GithubHookID int    `json:"github_hook_id,omitempty"`
+	Client       Client `json:"client,omitempty"`
 }
 
 // Path ...

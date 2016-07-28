@@ -48,12 +48,12 @@ type Deploy struct {
 
 // Application ...
 type Application struct {
-	AppID        string   `json:"app_id"`
-	Client       Client   `json:"client"`
+	AppID        string   `json:"app_id,omitempty"`
+	Client       Client   `json:"client,omitempty"`
 	Deploys      []Deploy `json:"deploys,omitempty"`
 	GithubHookID int      `json:"github_hook_id,omitempty"`
 	RepoOrg      string   `json:"repo_org,omitempty"`
-	Name         string   `json:"name"`
+	Name         string   `json:"name,omitempty"`
 	Repo         string   `json:"repo,omitempty"`
 	SlackChannel string   `json:"slack_channel,omitempty"`
 	RepoDetails  *struct {
