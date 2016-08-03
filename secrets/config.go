@@ -16,7 +16,7 @@ func ConfigVault(tokenFile string, vaultHost string) {
 	configEditor()
 	var err error
 	if _, err = os.Stat(tokenFile); os.IsNotExist(err) {
-		log.Fatal("No sanctuary token found. Run `drud secret auth`")
+		log.Fatal("No sanctuary token found. Run `drud auth --help`")
 	}
 
 	vaultCFG := *api.DefaultConfig()
