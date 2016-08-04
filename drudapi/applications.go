@@ -3,10 +3,10 @@ package drudapi
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	pathlib "path"
 	"strings"
-	"text/tabwriter"
+
+	"github.com/gosuri/uitable"
 )
 
 // BackUpLink is used to interacting with the gcs endpoint and retrieving signed urls to backups
@@ -166,20 +166,34 @@ func (a *Application) RepoURL(token string) string {
 
 // Describe an application..mostly used for displaying deploys
 func (a *Application) Describe() {
-	fmt.Println("App:", a.Name, "Client:", a.Client.Name)
-	fmt.Printf("\n%v %v found.\n", len(a.Deploys), FormatPlural(len(a.Deploys), "deploy", "deploys"))
-	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
-	defer tabWriter.Flush()
 
-	fmt.Fprintln(tabWriter, "\nNAME\tTEMPLATE\tBRANCH\tPROTOCOL\tHOSTNAME\tBASICAUTH USERNAME\tBASICAUTH PASSWORD\tAUTO MANAGED")
+	table := uitable.New()
+	table.MaxColWidth = 50
+	table.Wrap = true // wrap columns
+
+	deployTable := uitable.New()
+	deployTable.MaxColWidth = 50
+	deployTable.AddRow(
+		"NAME",
+		"TEMPLATE",
+		"BRANCH",
+		"PROTOCOL",
+		"HOSTNAME",
+		"BASICAUTH USERNAME",
+		"BASICAUTH PASSWORD",
+		"AUTO MANAGED",
+	)
+
+	// gather list of deploys by name
+	var appNames []string
 	for _, dep := range a.Deploys {
+		appNames = append(appNames, dep.Name)
 		var managed string
 
 		if dep.AutoManaged == true {
 			managed = "     ✓"
 		}
-
-		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
+		deployTable.AddRow(
 			dep.Name,
 			dep.Template,
 			dep.Branch,
@@ -190,6 +204,16 @@ func (a *Application) Describe() {
 			managed,
 		)
 	}
+	table.AddRow("NAME:", a.Name)
+	table.AddRow("CLIENT:", a.Client.Name)
+	table.AddRow("DEPLOY(s):", strings.Join(appNames, ","))
+	table.AddRow("SLACK CHANNEL:", a.SlackChannel)
+	table.AddRow("CREATED:", a.Created)
+
+	fmt.Println(table)
+	fmt.Printf("\n%v %v found.\n\n", len(a.Deploys), FormatPlural(len(a.Deploys), "deploy", "deploys"))
+	fmt.Println(deployTable)
+
 }
 
 // ApplicationList entity
@@ -216,25 +240,25 @@ func (a *ApplicationList) Unmarshal(data []byte) error {
 
 // Describe pretty prints the entity
 func (a *ApplicationList) Describe() {
-	fmt.Printf("%v %v found.\n", len(a.Items), FormatPlural(len(a.Items), "application", "applications"))
-	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
-	defer tabWriter.Flush()
+	fmt.Printf("%v %v found.\n\n", len(a.Items), FormatPlural(len(a.Items), "application", "applications"))
 
-	fmt.Fprintln(tabWriter, "\nNAME\tCLIENT\tAPP(s)\tSLACK CHANNEL\tCREATED\tUPDATED")
+	table := uitable.New()
+	table.MaxColWidth = 50
+	table.AddRow("NAME", "CLIENT", "DEPLOY(s)", "SLACK CHANNEL", "CREATED")
 	for _, app := range a.Items {
 		// gather list of deploys by name
 		var appNames []string
 		for _, dep := range app.Deploys {
 			appNames = append(appNames, dep.Name)
 		}
-
-		fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\t%v\t%v\n",
+		table.AddRow(
 			app.Name,
 			app.Client.Name,
 			strings.Join(appNames, ","),
 			app.SlackChannel,
 			app.Created,
-			app.Updated,
 		)
 	}
+	fmt.Println(table)
+
 }
