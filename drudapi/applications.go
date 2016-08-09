@@ -57,11 +57,12 @@ type Application struct {
 	Repo         string   `json:"repo,omitempty"`
 	SlackChannel string   `json:"slack_channel,omitempty"`
 	RepoDetails  *struct {
-		Host   string `json:"host,omitempty"`
-		Name   string `json:"name,omitempty"`
-		Org    string `json:"org,omitempty"`
-		Branch string `json:"branch,omitempty"`
-		Dest   string `json:"dest,omitempty"`
+		Host     string `json:"host,omitempty"`
+		Name     string `json:"name,omitempty"`
+		Org      string `json:"org,omitempty"`
+		Branch   string `json:"branch,omitempty"`
+		Dest     string `json:"dest,omitempty"`
+		CloneURL string `json:"clone_url,omitempty"`
 	} `json:"repo_details,omitempty"`
 	Created string `json:"_created,omitempty"`
 	Etag    string `json:"_etag,omitempty"`
