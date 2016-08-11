@@ -11,7 +11,7 @@ import (
 )
 
 // SetVaultVars sets globals for vault access
-func ConfigVault(tokenFile string, vaultHost string) {
+func ConfigVault(tokenFile string, vaultHost string) string {
 	// ensure there is a token for use with vault unless this is the auth command
 	configEditor()
 	var err error
@@ -36,6 +36,8 @@ func ConfigVault(tokenFile string, vaultHost string) {
 	vClient.SetToken(cTok)
 
 	vault = *vClient.Logical()
+	
+	return cTok
 }
 
 // GetTokenDetails returns a map of the user's token info
