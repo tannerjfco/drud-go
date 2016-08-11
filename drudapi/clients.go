@@ -93,12 +93,17 @@ func (c *ClientList) Describe() {
 	tabWriter := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
 	defer tabWriter.Flush()
 	if len(c.Items) > 0 {
-		fmt.Fprintln(tabWriter, "\nNAME\tEMAIL\tPHONE")
+		fmt.Fprintln(tabWriter, "\nNAME\tEMAIL\tPHONE\tREPO ORG")
 		for _, v := range c.Items {
-			fmt.Fprintf(tabWriter, "%v\t%v\t%v\n",
+			org := v.Name
+			if v.RepoOrg != "" {
+				org = v.RepoOrg
+			}
+			fmt.Fprintf(tabWriter, "%v\t%v\t%v\t%v\n",
 				v.Name,
 				v.Email,
 				v.Phone,
+				org,
 			)
 		}
 	}
