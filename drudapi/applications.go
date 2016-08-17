@@ -33,6 +33,30 @@ func (l *BackUpLink) Unmarshal(data []byte) error {
 	return err
 }
 
+// LoginLink is used to interacting with the gcs endpoint and retrieving signed urls to backups
+type LoginLink struct {
+	AppName    string
+	DeployName string
+	ClientName string
+	URL        string // will be set on GET from drudclient
+}
+
+// Path returns DRUD API path for a one time login link
+func (l LoginLink) Path(method string) string {
+	return pathlib.Join("login-link", l.ClientName, l.AppName, l.DeployName)
+}
+
+// Unmarshal sets the URL that should be in data in the URL field
+func (l *LoginLink) Unmarshal(data []byte) error {
+	var err error
+	if len(data) == 0 {
+		err = fmt.Errorf("No link to unmarshal!")
+	}
+
+	l.URL = string(data)
+	return err
+}
+
 // Deploy ...
 type Deploy struct {
 	Name          string `json:"name,omitempty"`
