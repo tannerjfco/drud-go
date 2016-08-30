@@ -16,6 +16,6 @@ func DockerCompose(arg ...string) error {
 	err := proc.Run()
 	if err != nil {
 		fmt.Println(err.Error())
+		return err
 	}
-	return err
 }
