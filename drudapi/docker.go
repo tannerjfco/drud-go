@@ -7,7 +7,7 @@ import (
 )
 
 // DockerCompose serves as a wrapper to docker-compose
-func DockerCompose(arg ...string) {
+func DockerCompose(arg ...string) error {
 	proc := exec.Command("docker-compose", arg...)
 	proc.Stdout = os.Stdout
 	proc.Stdin = os.Stdin
@@ -17,4 +17,5 @@ func DockerCompose(arg ...string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	return err
 }
