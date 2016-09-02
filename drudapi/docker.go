@@ -13,9 +13,5 @@ func DockerCompose(arg ...string) error {
 	proc.Stdin = os.Stdin
 	proc.Stderr = os.Stderr
 
-	err := proc.Run()
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
+	return proc.Run()
 }
