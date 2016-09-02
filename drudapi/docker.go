@@ -1,7 +1,6 @@
 package drudapi
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
