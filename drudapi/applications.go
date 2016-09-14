@@ -72,15 +72,23 @@ type Deploy struct {
 
 // Application ...
 type Application struct {
-	AppID        string   `json:"app_id,omitempty"`
-	Client       Client   `json:"client,omitempty"`
-	Deploys      []Deploy `json:"deploys,omitempty"`
-	GithubHookID int      `json:"github_hook_id,omitempty"`
-	RepoOrg      string   `json:"repo_org,omitempty"`
-	Name         string   `json:"name,omitempty"`
-	Repo         string   `json:"repo,omitempty"`
-	SlackChannel string   `json:"slack_channel,omitempty"`
-	RepoDetails  *struct {
+	AppID          string   `json:"app_id,omitempty"`
+	Client         Client   `json:"client,omitempty"`
+	Deploys        []Deploy `json:"deploys,omitempty"`
+	GithubHookID   int      `json:"github_hook_id,omitempty"`
+	RepoOrg        string   `json:"repo_org,omitempty"`
+	Name           string   `json:"name,omitempty"`
+	Repo           string   `json:"repo,omitempty"`
+	SlackChannel   string   `json:"slack_channel,omitempty"`
+	AuthKey        string   `json:"auth_key,omitempty"`
+	SecureAuthKey  string   `json:"secure_auth_key,omitempty"`
+	LoggedInKey    string   `json:"logged_in_key,omitempty"`
+	NonceKey       string   `json:"nonce_key,omitempty"`
+	AuthSalt       string   `json:"auth_salt,omitempty"`
+	SecureAuthSalt string   `json:"secure_auth_salt,omitempty"`
+	LoggedInSalt   string   `json:"logged_in_salt,omitempty"`
+	NonceSalt      string   `json:"nonce_salt,omitempty"`
+	RepoDetails    *struct {
 		Host     string `json:"host,omitempty"`
 		Name     string `json:"name,omitempty"`
 		Org      string `json:"org,omitempty"`
