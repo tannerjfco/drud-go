@@ -11,7 +11,7 @@ import (
 )
 
 // @todo: move me to shared package
-func ensureHTTPStatus(targetURL string, username string, password string, timeout int, expectedStatus int) error {
+func EnsureHTTPStatus(targetURL string, username string, password string, timeout int, expectedStatus int) error {
 	giveUp := make(chan bool)
 	go func() {
 		time.Sleep(time.Second * time.Duration(timeout))
