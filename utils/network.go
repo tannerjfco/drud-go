@@ -1,10 +1,13 @@
 package utils
 
 import (
-    "net/http"
-    "time"
-    "fmt"
-    log "github.com/Sirupsen/logrus"
+	"errors"
+	"fmt"
+	"net"
+	"net/http"
+	"time"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // @todo: move me to shared package
