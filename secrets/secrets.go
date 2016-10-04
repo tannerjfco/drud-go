@@ -30,6 +30,7 @@ type Secret struct {
 	Path    string
 	Data    map[string]interface{}
 	TmpFile string
+	Vault   *api.Logical
 }
 
 func GetVault() api.Logical {
@@ -38,6 +39,11 @@ func GetVault() api.Logical {
 
 // Init preps secret obj and handles existing secret issues
 func (s *Secret) Init(args []string) error {
+
+	if s.Vault == nil {
+		return fmt.Errorf("no vault client set")
+	}
+	vault := *s.Vault
 
 	secret, err := vault.Read(s.Path)
 	if err != nil {
@@ -57,7 +63,7 @@ func (s *Secret) Init(args []string) error {
 		if strings.HasPrefix(args[1], "@") {
 			file, err := filepath.Abs(args[1][1:])
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 			if _, err = os.Stat(file); os.IsNotExist(err) {
 				return errors.New("file does not exist")
@@ -85,8 +91,7 @@ func (s *Secret) Init(args []string) error {
 		}
 
 		if len(s.Data) == 0 {
-			fmt.Println("Not able to create secret from input.")
-			os.Exit(1)
+			return fmt.Errorf("Not able to create secret from input.")
 		}
 
 	} else {
@@ -100,7 +105,7 @@ func (s *Secret) Init(args []string) error {
 
 		err = os.Rename(tmpfile.Name(), tmpfile.Name()+".yaml")
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		s.TmpFile = tmpfile.Name() + ".yaml"
 
@@ -423,4 +428,17 @@ func authVault(token string, vaultHost string) error {
 	tmpFileLoc := tmpfile.Name()
 	ConfigVault(tmpFileLoc, vaultHost)
 	return nil
+}
+
+// NormalizePath prefixes secret paths with secret when necessary
+func NormalizePath(sPath string) (newPath string) {
+	newPath = sPath
+	if !strings.HasPrefix(sPath, "secret/") || !strings.HasPrefix(sPath, "cubbyhole/") {
+		if strings.HasPrefix(sPath, "/") {
+			newPath = filepath.Join("secret", sPath[1:])
+		} else {
+			newPath = filepath.Join("secret", sPath)
+		}
+	}
+	return
 }

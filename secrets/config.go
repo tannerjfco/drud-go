@@ -1,7 +1,6 @@
 package secrets
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,21 +9,14 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-// SetVaultVars sets globals for vault access
+// ConfigVault sets globals for vault access
 func ConfigVault(tokenFile string, vaultHost string) string {
 	// ensure there is a token for use with vault unless this is the auth command
-	configEditor()
+	SetSecretEditor(&editor, "atom -w")
+
 	var err error
 	if _, err = os.Stat(tokenFile); os.IsNotExist(err) {
 		log.Fatal("No sanctuary token found. Run `drud auth --help`")
-	}
-
-	vaultCFG := *api.DefaultConfig()
-	vaultCFG.Address = vaultHost
-
-	vClient, err = api.NewClient(&vaultCFG)
-	if err != nil {
-		fmt.Println(err)
 	}
 
 	var cTok string
@@ -33,11 +25,28 @@ func ConfigVault(tokenFile string, vaultHost string) string {
 		log.Fatalln("Error reading token file", err)
 	}
 
-	vClient.SetToken(cTok)
+	vPtr, err := NewAuthVault(vaultHost, cTok)
+	if err != nil {
+		log.Fatalln("Could not create vault api client")
+	}
+	vault = *vPtr
 
-	vault = *vClient.Logical()
-	
 	return cTok
+}
+
+// NewAuthVault returns an authenticated vault
+func NewAuthVault(vaultHost string, token string) (*api.Logical, error) {
+	vaultCFG := *api.DefaultConfig()
+	vaultCFG.Address = vaultHost
+
+	vClient, err := api.NewClient(&vaultCFG)
+	if err != nil {
+		return nil, err
+	}
+
+	vClient.SetToken(token)
+
+	return vClient.Logical(), nil
 }
 
 // GetTokenDetails returns a map of the user's token info
@@ -62,14 +71,20 @@ func getSanctuaryToken(tokenFile string) (string, error) {
 	return strings.TrimSpace(string(fileBytes)), nil
 }
 
-func configEditor() {
+func GetSecretEditor() string {
 	// allow user to have different editor for secrets
 	// fall back to default editor
-	editor = os.Getenv("SECRET_EDITOR")
+	editor := os.Getenv("SECRET_EDITOR")
 	if editor == "" {
 		editor = os.Getenv("EDITOR")
-		if editor == "" {
-			editor = "atom -w"
-		}
+	}
+
+	return editor
+}
+
+func SetSecretEditor(varToSet *string, defaultEditor string) {
+	*varToSet = GetSecretEditor()
+	if *varToSet == "" {
+		*varToSet = defaultEditor
 	}
 }
