@@ -3,7 +3,6 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/google/go-github/github"
@@ -55,7 +54,7 @@ func CreateGithubToken(username, pass, otp, tokenName string) (string, error) {
 		github.ScopeRepo,
 	}
 
-	// Add MAC addr to token note
+	// Create the token name.
 	scopeNote := fmt.Sprintf("DRUD Sanctuary Token-%s", tokenName)
 
 	ar := &github.AuthorizationRequest{
