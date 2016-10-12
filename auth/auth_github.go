@@ -37,8 +37,8 @@ func Github(gitToken, vaultHost string) (string, error) {
 	return cTok, nil
 }
 
-// CreateGithubToken creates a github token for a user.
-func CreateGithubToken(username, pass, otp, tokenName string) (string, error) {
+// GenerateGithubToken creates a github token for a user.
+func GenerateGithubToken(username, pass, otp, tokenName string) (string, error) {
 
 	auth := github.BasicAuthTransport{
 		Username: username,
