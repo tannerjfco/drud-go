@@ -13,31 +13,30 @@ import (
 // HTTPOptions defines the URL and other common HTTP options for EnsureHTTPStatus.
 type HTTPOptions struct {
 	URL            string
-	username       string
-	password       string
-	timeout        time.Duration
-	tickerInterval time.Duration
-	expectedStatus int
+	Username       string
+	Password       string
+	Timeout        time.Duration
+	TickerInterval time.Duration
+	ExpectedStatus int
 	headers        map[string]string
 }
 
 // Returns a new HTTPOptions struct with some sane defaults.
-func NewHTTPOptions(URL string) *HTTPOptions {
+func NewHTTPOptions(URL string) HTTPOptions {
 	o := HTTPOptions{
 		URL:            URL,
-		tickerInterval: 20,
-		timeout:        60,
-		expectedStatus: http.StatusOK,
+		TickerInterval: 20,
+		Timeout:        60,
+		ExpectedStatus: http.StatusOK,
 	}
-	return &o
+	return o
 }
 
-// EnsureHTTPStatus will verify a URL responds with a given response code within the timeout period (in seconds)
+// EnsureHTTPStatus will verify a URL responds with a given response code within the Timeout period (in seconds)
 func EnsureHTTPStatus(o HTTPOptions) error {
-	//targetURL string, username string, password string, timeout int, expectedStatus int
 	giveUp := make(chan bool)
 	go func() {
-		time.Sleep(time.Second * o.timeout)
+		time.Sleep(time.Second * o.Timeout)
 		giveUp <- true
 	}()
 
@@ -46,21 +45,13 @@ func EnsureHTTPStatus(o HTTPOptions) error {
 		return errors.New("Redirect")
 	}
 
-	// Set some sane defaults if they are not passed in.
-	if o.tickerInterval == 0 {
-		o.tickerInterval = 20
-	}
-	if o.expectedStatus == 0 {
-		o.expectedStatus = http.StatusOK
-	}
-
-	queryTicker := time.NewTicker(time.Second * o.tickerInterval).C
+	queryTicker := time.NewTicker(time.Second * o.TickerInterval).C
 	for {
 		select {
 		case <-queryTicker:
 			req, err := http.NewRequest("GET", o.URL, nil)
-			if o.username != "" && o.password != "" {
-				req.SetBasicAuth(o.username, o.password)
+			if o.Username != "" && o.Password != "" {
+				req.SetBasicAuth(o.Username, o.Password)
 			}
 
 			// Make the request
@@ -73,11 +64,11 @@ func EnsureHTTPStatus(o HTTPOptions) error {
 			}
 			if err == nil {
 				defer resp.Body.Close()
-				if resp.StatusCode == o.expectedStatus {
+				if resp.StatusCode == o.ExpectedStatus {
 					// Log expected vs. actual if we do not get a match.
 					log.WithFields(log.Fields{
 						"URL":      o.URL,
-						"expected": o.expectedStatus,
+						"expected": o.ExpectedStatus,
 						"got":      resp.StatusCode,
 					}).Info("HTTP Status code matched expectations")
 					return nil
@@ -86,13 +77,13 @@ func EnsureHTTPStatus(o HTTPOptions) error {
 				// Log expected vs. actual if we do not get a match.
 				log.WithFields(log.Fields{
 					"URL":      o.URL,
-					"expected": o.expectedStatus,
+					"expected": o.ExpectedStatus,
 					"got":      resp.StatusCode,
 				}).Info("HTTP Status could not be matched")
 			}
 
 		case <-giveUp:
-			return fmt.Errorf("No deployment found after waiting %d seconds", o.timeout)
+			return fmt.Errorf("No deployment found after waiting %d seconds", o.Timeout)
 		}
 	}
 }
