@@ -18,7 +18,7 @@ type HTTPOptions struct {
 	Timeout        time.Duration
 	TickerInterval time.Duration
 	ExpectedStatus int
-	headers        map[string]string
+	Headers        map[string]string
 }
 
 // Returns a new HTTPOptions struct with some sane defaults.
@@ -57,8 +57,8 @@ func EnsureHTTPStatus(o HTTPOptions) error {
 			// Make the request
 			resp, err := client.Do(req)
 
-			if len(o.headers) > 0 {
-				for header, value := range o.headers {
+			if len(o.Headers) > 0 {
+				for header, value := range o.Headers {
 					req.Header.Add(header, value)
 				}
 			}
