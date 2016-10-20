@@ -22,18 +22,19 @@ type HTTPOptions struct {
 }
 
 // Returns a new HTTPOptions struct with some sane defaults.
-func NewHTTPOptions(URL string) HTTPOptions {
+func NewHTTPOptions(URL string) *HTTPOptions {
 	o := HTTPOptions{
 		URL:            URL,
 		TickerInterval: 20,
 		Timeout:        60,
 		ExpectedStatus: http.StatusOK,
+		Headers:        make(map[string]string),
 	}
-	return o
+	return &o
 }
 
 // EnsureHTTPStatus will verify a URL responds with a given response code within the Timeout period (in seconds)
-func EnsureHTTPStatus(o HTTPOptions) error {
+func EnsureHTTPStatus(o *HTTPOptions) error {
 	giveUp := make(chan bool)
 	go func() {
 		time.Sleep(time.Second * o.Timeout)
@@ -54,14 +55,14 @@ func EnsureHTTPStatus(o HTTPOptions) error {
 				req.SetBasicAuth(o.Username, o.Password)
 			}
 
-			// Make the request
-			resp, err := client.Do(req)
-
 			if len(o.Headers) > 0 {
 				for header, value := range o.Headers {
 					req.Header.Add(header, value)
 				}
 			}
+			// Make the request
+			resp, err := client.Do(req)
+
 			if err == nil {
 				defer resp.Body.Close()
 				if resp.StatusCode == o.ExpectedStatus {
