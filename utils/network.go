@@ -57,6 +57,10 @@ func EnsureHTTPStatus(o *HTTPOptions) error {
 
 			if len(o.Headers) > 0 {
 				for header, value := range o.Headers {
+					if header == "Host" {
+						req.Host = value
+						continue
+					}
 					req.Header.Add(header, value)
 				}
 			}
