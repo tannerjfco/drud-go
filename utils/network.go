@@ -35,6 +35,11 @@ func NewHTTPOptions(URL string) *HTTPOptions {
 
 // EnsureHTTPStatus will verify a URL responds with a given response code within the Timeout period (in seconds)
 func EnsureHTTPStatus(o *HTTPOptions) error {
+	tickerInt := o.TickerInterval
+	if tickerInt == 0 {
+		tickerInt = 20
+	}
+
 	giveUp := make(chan bool)
 	go func() {
 		time.Sleep(time.Second * o.Timeout)
@@ -46,7 +51,7 @@ func EnsureHTTPStatus(o *HTTPOptions) error {
 		return errors.New("Redirect")
 	}
 
-	queryTicker := time.NewTicker(time.Second * o.TickerInterval).C
+	queryTicker := time.NewTicker(time.Second * tickerInt).C
 	for {
 		select {
 		case <-queryTicker:
