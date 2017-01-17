@@ -301,7 +301,9 @@ func (s *Secret) Validate() (bool, error) {
 	mapPath := filepath.Join("secret/validation/maps", sPath)
 	sMap, err := vault.Read(mapPath)
 	if err != nil {
-		return false, err
+		if !strings.Contains(err.Error(), "No secret") {
+			return false, err
+		}
 	}
 
 	// no validation
