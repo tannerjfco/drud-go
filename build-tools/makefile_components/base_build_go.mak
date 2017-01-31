@@ -36,7 +36,7 @@ linux darwin: $(GOFILES)
 	        OS=$@                                                 \
 	        VERSION=$(VERSION)                                             \
 	        PKG=$(PKG)                                                     \
-	        ./build/build_go.sh                                               \
+	        ./build-tools/build-scripts/build_go.sh                                               \
 	    "
 	@touch $@
 	@echo $(VERSION) >VERSION.txt

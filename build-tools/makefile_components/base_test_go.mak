@@ -19,5 +19,5 @@ test: linux
 	    $(BUILD_IMAGE)                                                     \
 	    /bin/sh -c "                                                       \
 	        OS=linux                                                   \
-	        ./build/test_go.sh $(SRC_DIRS)                                    \
+	        ./build-tools/build-scripts/test_go.sh $(SRC_DIRS)                                    \
 	    "

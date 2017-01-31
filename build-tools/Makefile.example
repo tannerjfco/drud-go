@@ -3,13 +3,13 @@
 ##### These variables need to be adjusted in most repositories #####
 
 # This repo's root import path (under GOPATH).
-PKG := github.com/drud/drud-go
+PKG := github.com/drud/repo_name
 
 # Docker repo for a push
-# DOCKER_REPO ?= drud/drud-go
+# DOCKER_REPO ?= drud/docker_repo_name
 
 # Upstream repo used in the Dockerfile
-# UPSTREAM_REPO ?= drud/drud-go
+# UPSTREAM_REPO ?= full/upstream-docker-repo
 
 # Top-level directories to build
 SRC_DIRS := files drudapi secrets utils
@@ -35,7 +35,7 @@ VERSION := $(shell git describe --tags --always --dirty)
 # change.
 include build-tools/makefile_components/base_build_go.mak
 #include build-tools/makefile_components/base_build_python-docker.mak
-#include build-tools/makefile_components/base_container.mak
-#include build-tools/makefile_components/base_push.mak
+include build-tools/makefile_components/base_container.mak
+include build-tools/makefile_components/base_push.mak
 include build-tools/makefile_components/base_test_go.mak
 #include build-tools/makefile_components/base_test_python.mak
