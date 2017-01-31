@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	pathlib "path"
-	"strings"
 
 	"github.com/gosuri/uitable"
 )
@@ -61,6 +60,7 @@ func (l *LoginLink) Unmarshal(data []byte) error {
 type Application struct {
 	AppID          string `json:"app_id,omitempty"`
 	Client         Client `json:"client,omitempty"`
+	Template       string `json:"template,omitempty"`
 	GithubHookID   int    `json:"github_hook_id,omitempty"`
 	RepoOrg        string `json:"repo_org,omitempty"`
 	Name           string `json:"name,omitempty"`
@@ -106,16 +106,6 @@ func (a *Application) Unmarshal(data []byte) error {
 	return err
 }
 
-// GetDeploy looks for a deploy by name and returns it
-func (a *Application) GetDeploy(name string) *Deploy {
-	for _, d := range a.Deploys {
-		if d.Name == name {
-			return &d
-		}
-	}
-	return nil
-}
-
 // JSON ...
 func (a Application) JSON() []byte {
 	a.ID = ""
@@ -148,20 +138,12 @@ func (a Application) ETAG() string {
 
 // GetFilesLink ...
 func (a *Application) GetFilesLink(deployName string) (string, error) {
-	deploy := a.GetDeploy(deployName)
-	if deploy == nil {
-		return "", fmt.Errorf("No deploy found by name %s", deployName)
-	}
-	return a.AppID + "/" + deploy.Name, nil
+	return a.AppID + "/" + deployName, nil
 }
 
 // GetMysqlLink ...
 func (a *Application) GetMysqlLink(deployName string) (string, error) {
-	deploy := a.GetDeploy(deployName)
-	if deploy == nil {
-		return "", fmt.Errorf("No deploy found by name %s", deployName)
-	}
-	return a.AppID + "/" + deploy.Name, nil
+	return a.AppID + "/" + deployName, nil
 }
 
 // RepoURL ...
@@ -190,37 +172,12 @@ func (a *Application) Describe() {
 	table.MaxColWidth = 50
 	table.Wrap = true // wrap columns
 
-	deployTable := uitable.New()
-
-	// gather list of deploys by name
-	var appNames []string
-	for _, dep := range a.Deploys {
-		appNames = append(appNames, dep.Name)
-		var managed string
-
-		url := dep.Protocol + "://" + dep.Url
-
-		if dep.AutoManaged == true {
-			managed = "✓"
-		}
-		deployTable.AddRow("DEPLOY NAME:", dep.Name)
-		deployTable.AddRow("URL:", url)
-		deployTable.AddRow("TEMPLATE:", dep.Template)
-		deployTable.AddRow("BRANCH:", dep.Branch)
-		deployTable.AddRow("AUTH USER:", dep.BasicAuthUser)
-		deployTable.AddRow("AUTH PASS:", dep.BasicAuthPass)
-		deployTable.AddRow("AUTO MANAGED:", managed)
-		deployTable.AddRow("\n")
-	}
 	table.AddRow("APP NAME:", a.Name)
 	table.AddRow("CLIENT:", a.Client.Name)
-	table.AddRow("DEPLOY(s):", strings.Join(appNames, ","))
 	table.AddRow("SLACK CHANNEL:", a.SlackChannel)
 	table.AddRow("CREATED:", a.Created)
 
 	fmt.Println(table)
-	fmt.Printf("\n%v %v found.\n\n", len(a.Deploys), FormatPlural(len(a.Deploys), "deploy", "deploys"))
-	fmt.Println(deployTable)
 
 }
 
@@ -252,17 +209,11 @@ func (a *ApplicationList) Describe() {
 
 	table := uitable.New()
 	table.MaxColWidth = 50
-	table.AddRow("NAME", "CLIENT", "DEPLOY(s)", "SLACK CHANNEL", "CREATED")
+	table.AddRow("NAME", "CLIENT", "SLACK CHANNEL", "CREATED")
 	for _, app := range a.Items {
-		// gather list of deploys by name
-		var appNames []string
-		for _, dep := range app.Deploys {
-			appNames = append(appNames, dep.Name)
-		}
 		table.AddRow(
 			app.Name,
 			app.Client.Name,
-			strings.Join(appNames, ","),
 			app.SlackChannel,
 			app.Created,
 		)
