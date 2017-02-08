@@ -1,4 +1,4 @@
-package utils
+package network
 
 import (
 	"errors"
@@ -21,7 +21,7 @@ type HTTPOptions struct {
 	Headers        map[string]string
 }
 
-// Returns a new HTTPOptions struct with some sane defaults.
+// NewHTTPOptions returns a new HTTPOptions struct with some sane defaults.
 func NewHTTPOptions(URL string) *HTTPOptions {
 	o := HTTPOptions{
 		URL:            URL,

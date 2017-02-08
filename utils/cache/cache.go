@@ -1,7 +1,7 @@
 // Method outlined on the blog of Karl Seguin
 // http://openmymind.net/Do-More-In-Process-Caching/
 
-package utils
+package cache
 
 import (
 	"sync"
