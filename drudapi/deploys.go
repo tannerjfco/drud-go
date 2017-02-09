@@ -34,7 +34,7 @@ func (d Deploy) Path(method string) string {
 	if method == "POST" {
 		path = "deploys"
 	} else {
-		path = "dep[oys/" + d.DeployID
+		path = "deploys/" + d.DeployID
 	}
 	return path
 }
@@ -120,11 +120,16 @@ func (d *DeployList) Describe() {
 	table.MaxColWidth = 50
 	table.AddRow("NAME", "CLIENT", "CREATED")
 	for _, deploy := range d.Items {
-		table.AddRow(
-			deploy.DeployID,
-			deploy.Application.Client.Name,
-			deploy.Created,
-		)
+		table.AddRow("DEPLOY ID:", deploy.DeployID)
+		table.AddRow("NAME:", deploy.Name)
+		table.AddRow("URL:", deploy.Url)
+		table.AddRow("TEMPLATE:", deploy.Template)
+		table.AddRow("BRANCH:", deploy.Branch)
+		table.AddRow("AUTH USER:", deploy.BasicAuthUser)
+		table.AddRow("AUTH PASS:", deploy.BasicAuthPass)
+		table.AddRow("AUTO MANAGED:", deploy.AutoManaged)
+		table.AddRow("\n")
+
 	}
 	fmt.Println(table)
 
