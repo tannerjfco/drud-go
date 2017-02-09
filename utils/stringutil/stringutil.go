@@ -1,4 +1,4 @@
-package strings
+package stringutil
 
 import (
 	"math/rand"
