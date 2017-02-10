@@ -9,22 +9,30 @@ import (
 
 // Deploy ...
 type Deploy struct {
-	DeployID      string      `json:"deploy_id,omitempty"`
-	Name          string      `json:"name,omitempty"`
-	Application   Application `json:"application,omitempty"`
-	Template      string      `json:"template,omitempty"`
-	Branch        string      `json:"branch,omitempty"`
-	Hostname      string      `json:"hostname,omitempty"`
-	Protocol      string      `json:"protocol,omitempty"`
-	BasicAuthUser string      `json:"basicauth_user,omitempty"`
-	BasicAuthPass string      `json:"basicauth_pass,omitempty"`
-	AutoManaged   bool        `json:"auto_managed,omitempty"`
-	MigrateFrom   string      `json:"migrate_from,omitempty"`
-	Url           string      `json:"url,omitempty"`
-	Created       string      `json:"_created,omitempty"`
-	Etag          string      `json:"_etag,omitempty"`
-	ID            string      `json:"_id,omitempty"`
-	Updated       string      `json:"_updated,omitempty"`
+	DeployID       string      `json:"deploy_id,omitempty"`
+	Name           string      `json:"name,omitempty"`
+	Application    Application `json:"application,omitempty"`
+	Template       string      `json:"template,omitempty"`
+	Branch         string      `json:"branch,omitempty"`
+	Hostname       string      `json:"hostname,omitempty"`
+	Protocol       string      `json:"protocol,omitempty"`
+	BasicAuthUser  string      `json:"basicauth_user,omitempty"`
+	BasicAuthPass  string      `json:"basicauth_pass,omitempty"`
+	AutoManaged    bool        `json:"auto_managed,omitempty"`
+	MigrateFrom    string      `json:"migrate_from,omitempty"`
+	Url            string      `json:"url,omitempty"`
+	AuthKey        string      `json:"auth_key,omitempty"`
+	SecureAuthKey  string      `json:"secure_auth_key,omitempty"`
+	LoggedInKey    string      `json:"logged_in_key,omitempty"`
+	NonceKey       string      `json:"nonce_key,omitempty"`
+	AuthSalt       string      `json:"auth_salt,omitempty"`
+	SecureAuthSalt string      `json:"secure_auth_salt,omitempty"`
+	LoggedInSalt   string      `json:"logged_in_salt,omitempty"`
+	NonceSalt      string      `json:"nonce_salt,omitempty"`
+	Created        string      `json:"_created,omitempty"`
+	Etag           string      `json:"_etag,omitempty"`
+	ID             string      `json:"_id,omitempty"`
+	Updated        string      `json:"_updated,omitempty"`
 }
 
 // Path ...
