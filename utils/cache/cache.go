@@ -7,29 +7,29 @@ import (
 	"sync"
 )
 
-type CacheItem interface {
+type Entry interface {
 	GetID() string
 }
 
 type Cache struct {
-	items map[string]CacheItem
+	items map[string]Entry
 	lock  *sync.RWMutex
 }
 
 func New() *Cache {
 	return &Cache{
-		items: make(map[string]CacheItem, 1024),
+		items: make(map[string]Entry, 1024),
 		lock:  new(sync.RWMutex),
 	}
 }
 
-func (c *Cache) Get(id string) CacheItem {
+func (c *Cache) Get(id string) Entry {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	return c.items[id]
 }
 
-func (c *Cache) Add(item CacheItem) {
+func (c *Cache) Add(item Entry) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.items[item.GetID()] = item
